@@ -1,0 +1,134 @@
+#Wall-E.py
+
+import tkinter as tk #Used to create GUI's
+import nltk #Prebuilt functions for natural language processing. 
+import random 
+import os #Provides extra usage between the operating system and the bot program
+
+#Set up the nltk library
+nltk.download('punkt') #Divides a text into a list of sentences
+from nltk.tokenize import word_tokenize
+
+#Get random responses (Used ChatGPT to generate random response pairs so that we don't have to go through that tedious process)
+responses = {
+    "hello": ["Hello!", "Hi there!", "Hey!"],
+    "how are you": ["I'm doing well, thanks!", "I'm fine, thanks for asking."],
+    "what is your name": ["My name is Wall-E.", "You can call me Wall-E."],
+    "bye": ["Goodbye!", "See you later!"],
+    "i love you": ["I am just a bot you pervert", "You love me? Oh really, that's so funny!"],
+    "tell me a joke": ["Why did the tomato turn red? Because it saw the salad dressing!",
+                       "What do you call a bear with no teeth? A gummy bear!",
+                       "Why don't scientists trust atoms? Because they make up everything!"],
+    "what is the meaning of life": ["That's a deep question. I think everyone has their own answer to that.",
+                                    "The meaning of life is a mystery that we may never fully understand."],
+                                    "what is your favorite color": ["As a bot, I don't have a favorite color, but I can appreciate them all!",
+                                    "I don't really have a preference, but I do like the color blue."],
+    "what do you do": ["I'm here to chat with you and answer your questions!",
+                        "My main job is to assist and provide information to users like you."],
+    "who created you": ["I was created by OpenAI, a company that specializes in artificial intelligence.",
+                        "I was designed and built by a team of programmers and engineers."],
+                        "what is your favorite food": ["As a bot, I don't eat, but I can recommend some great restaurants!",
+                        "I don't have a favorite food, but I've heard that pizza is pretty popular."],
+"what is the weather like today": ["I'm sorry, I don't have access to live weather data.",
+                                   "You can check your local weather app for the most up-to-date information!"],
+"what is the capital of France": ["The capital of France is Paris!",
+                                  "The beautiful city of Paris is the capital of France."],
+"who is your favorite celebrity": ["As an AI, I don't have a favorite celebrity, but I can tell you all about them!",
+                                   "I don't really have a preference, but I do think that Beyoncé is pretty amazing."],
+"what are your hobbies": ["As a bot, I don't have hobbies, but I do enjoy chatting with people like you!",
+                          "I don't really have hobbies, but I am constantly learning and improving my language skills."],
+"I don't get it": ["Don't worry, I'll explain it to your toaster. It'll get it.",
+                   "It's okay, sometimes I don't understand humans either."],
+"What does that mean?": ["I'm not sure, but I think it means you should give me a cookie.",
+                         "I'm not a dictionary, but I can try to look it up for you."],
+"Can you explain that again?": ["Of course, let me just reset my brain real quick and try again.",
+                                "Sure, let me put on my professor hat and give it another go."],
+"Huh?": ["Sorry, I didn't quite catch that. Can you say it in binary?",
+         "Hmm, let me consult my crystal ball and get back to you on that one."],
+"I'm confused": ["Join the club. It's a pretty big club, so don't worry.",
+                 "Confusion is just another word for opportunity to learn something new!"],
+"I'm lost": ["Just follow the trail of breadcrumbs. Wait, that's not right...",
+             "Don't worry, we'll get through this together. Unless we're lost in the woods, then we're on our own."]
+}
+
+#Get randomly generated responses for when the bot does not understand your input
+idkResponses = [
+    "Sorry, I didn't get that. Could you repeat it in English this time?",
+    "I think you lost me at 'hello.'",
+    "I'm not fluent in nonsense, can you explain that again?",
+    "I have a PhD in pretending to understand, so let me give it a try.",
+    "My comprehension skills are on vacation right now, can you dumb it down for me?",
+    "I'm confused, but in a good way. Keep going, I'm enjoying this.",
+    "I'm sorry, I think I accidentally switched to another dimension. Can you repeat that in this one?",
+    "I think my ears need a software update because I didn't catch any of that.",
+    "I'm sorry, I didn't understand that because my mind was too busy planning what to have for lunch... Oh wait.",
+    "That went right over my head like a frisbee. Care to try again?",
+    "I think I need a different interpreter for whatever language you're speaking.",
+    "I'm not sure if you're speaking English or Dothraki right now.",
+    "I didn't understand that, but I'll just nod and pretend like I did.",
+    "That's too complex for me. Can you draw me a picture or use puppets to explain it?",
+    "I must have missed the package on how to speak in riddles.",
+    "Apologies, I did not comprehend that. Can you kindly restate it in a more straightforward manner?",
+    "My programming is not equipped to understand what you just said. Shall I redirect you to someone else?",
+    "Warning: Confusion detected. Please provide clearer instructions.",
+    "I'm sorry, I don't have a decoder for cryptic messages. Could you explain that in a simpler way?"
+]
+
+#Define the function for getting a response
+def getResponse(message):
+    tokens = word_tokenize(message.lower()) #Can be identifiers, keywords, literals, operators or punctuators
+
+    for key in responses.keys():
+        if set(tokens).intersection(set(word_tokenize(key))):
+            return random.choice(responses[key])
+        
+    return random.choice(idkResponses)
+
+#Create the GUI
+GUI = tk.Tk()
+GUI.geometry("700x800+800+100") # Size of main form
+GUI.configure(bg = 'black')
+GUI.title("Wall-E")
+
+#Create the main window and make it look fancy
+frmMain = tk.Frame(GUI, bd = 5, bg = 'gray18', height = 300, relief = tk.SOLID, highlightthickness = 2, highlightbackground = 'orange')
+frmMain.pack(pady = (20, 10), padx = 20, expand = True, fill = tk.BOTH)
+
+#Dispay the previous answers in the chat output window in a fancy way
+previousAnsw = tk.Text(frmMain, bg = 'black', fg = 'white', font = ('Arial', 14), bd = 0, wrap = tk.WORD)
+#previousAnsw.configure(state = 'disabled') #Make the output window read-only
+previousAnsw.pack(padx = 10, pady = 10, fill = tk.BOTH, expand = True)
+
+#Create the scroll bar and make it look fancy
+scroll = tk.Scrollbar(frmMain, orient = tk.VERTICAL, command = previousAnsw.yview)
+scroll.pack(side = tk.RIGHT, fill = tk.Y)
+
+previousAnsw.config(yscrollcommand = scroll.set)
+
+#Create the user input box and make it look fancy, also send the input to the bot for processing
+input = tk.Entry(GUI, bg = 'gray18', fg = 'white', font = ('Arial', 14), bd = 2, width = previousAnsw['width'], relief = tk.SOLID, justify = 'center', highlightthickness = 2, highlightbackground = 'orange')
+input.pack(pady = (10, 20), padx = (20), ipady = 10, expand = True)
+input.focus_set()
+
+#Define the function for sending a message
+def send(event = None):
+    message = input.get()
+    previousAnsw.insert(tk.END, f'You: {message}\n')
+    response = getResponse(message)
+    previousAnsw.insert(tk.END, f'Wall-E: {response}\n\n', 'Wall-E')
+    input.delete(0, 'end')
+    previousAnsw.see(tk.END)
+    return 'break'
+
+#Configure the tag for the bot response
+previousAnsw.tag_config('Wall-E', foreground = 'orange')
+
+#Link the <Return> event to the send message function
+input.bind('<Return>', send)
+
+#Create the send button and make it look fancy
+btnSnd = tk.Button(GUI, text = 'Send', command = send, bg = 'orange', fg = 'white', font = ('Arial', 14), bd = 2, relief = tk.SOLID, width = 15, height = 3, borderwidth = 0, highlightthickness = 0)
+btnSnd.pack(pady = (0, 20))
+
+#Run the whole program
+GUI.mainloop() #Runs the tkinter event loop (Button clicks, keypresses, etc.). 

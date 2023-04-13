@@ -1,134 +1,164 @@
-#Wall-E.py
+#Download when running bot for the first time
+#nltk.download("punkt") #Necessary for tokenizing text
 
-import tkinter as tk #Used to create GUI's
-import nltk #Prebuilt functions for natural language processing. 
-import random 
-import os #Provides extra usage between the operating system and the bot program
+#Chatbot Libraries
+import nltk
+import numpy as np
+import tflearn #Deep learning library (Uses neural networks)
+import tensorflow as tf #Numerical computation library to make machine learning and neural networks faster
+import json
+import pickle
+import random
+from nltk.stem.lancaster import LancasterStemmer
 
-#Set up the nltk library
-nltk.download('punkt') #Divides a text into a list of sentences
-from nltk.tokenize import word_tokenize
+#GUI libraries
+import tkinter as tk
+from tkinter import scrolledtext
+from PIL import Image, ImageTk  
 
-#Get random responses (Used ChatGPT to generate random response pairs so that we don't have to go through that tedious process)
-responses = {
-    "hello": ["Hello!", "Hi there!", "Hey!"],
-    "how are you": ["I'm doing well, thanks!", "I'm fine, thanks for asking."],
-    "what is your name": ["My name is Wall-E.", "You can call me Wall-E."],
-    "bye": ["Goodbye!", "See you later!"],
-    "i love you": ["I am just a bot you pervert", "You love me? Oh really, that's so funny!"],
-    "tell me a joke": ["Why did the tomato turn red? Because it saw the salad dressing!",
-                       "What do you call a bear with no teeth? A gummy bear!",
-                       "Why don't scientists trust atoms? Because they make up everything!"],
-    "what is the meaning of life": ["That's a deep question. I think everyone has their own answer to that.",
-                                    "The meaning of life is a mystery that we may never fully understand."],
-                                    "what is your favorite color": ["As a bot, I don't have a favorite color, but I can appreciate them all!",
-                                    "I don't really have a preference, but I do like the color blue."],
-    "what do you do": ["I'm here to chat with you and answer your questions!",
-                        "My main job is to assist and provide information to users like you."],
-    "who created you": ["I was created by OpenAI, a company that specializes in artificial intelligence.",
-                        "I was designed and built by a team of programmers and engineers."],
-                        "what is your favorite food": ["As a bot, I don't eat, but I can recommend some great restaurants!",
-                        "I don't have a favorite food, but I've heard that pizza is pretty popular."],
-"what is the weather like today": ["I'm sorry, I don't have access to live weather data.",
-                                   "You can check your local weather app for the most up-to-date information!"],
-"what is the capital of France": ["The capital of France is Paris!",
-                                  "The beautiful city of Paris is the capital of France."],
-"who is your favorite celebrity": ["As an AI, I don't have a favorite celebrity, but I can tell you all about them!",
-                                   "I don't really have a preference, but I do think that Beyoncé is pretty amazing."],
-"what are your hobbies": ["As a bot, I don't have hobbies, but I do enjoy chatting with people like you!",
-                          "I don't really have hobbies, but I am constantly learning and improving my language skills."],
-"I don't get it": ["Don't worry, I'll explain it to your toaster. It'll get it.",
-                   "It's okay, sometimes I don't understand humans either."],
-"What does that mean?": ["I'm not sure, but I think it means you should give me a cookie.",
-                         "I'm not a dictionary, but I can try to look it up for you."],
-"Can you explain that again?": ["Of course, let me just reset my brain real quick and try again.",
-                                "Sure, let me put on my professor hat and give it another go."],
-"Huh?": ["Sorry, I didn't quite catch that. Can you say it in binary?",
-         "Hmm, let me consult my crystal ball and get back to you on that one."],
-"I'm confused": ["Join the club. It's a pretty big club, so don't worry.",
-                 "Confusion is just another word for opportunity to learn something new!"],
-"I'm lost": ["Just follow the trail of breadcrumbs. Wait, that's not right...",
-             "Don't worry, we'll get through this together. Unless we're lost in the woods, then we're on our own."]
-}
+#Create empty arrays
+words = []
+labels = []
+x_docs = []
+y_docs = []
+training = []
+output = []
 
-#Get randomly generated responses for when the bot does not understand your input
-idkResponses = [
-    "Sorry, I didn't get that. Could you repeat it in English this time?",
-    "I think you lost me at 'hello.'",
-    "I'm not fluent in nonsense, can you explain that again?",
-    "I have a PhD in pretending to understand, so let me give it a try.",
-    "My comprehension skills are on vacation right now, can you dumb it down for me?",
-    "I'm confused, but in a good way. Keep going, I'm enjoying this.",
-    "I'm sorry, I think I accidentally switched to another dimension. Can you repeat that in this one?",
-    "I think my ears need a software update because I didn't catch any of that.",
-    "I'm sorry, I didn't understand that because my mind was too busy planning what to have for lunch... Oh wait.",
-    "That went right over my head like a frisbee. Care to try again?",
-    "I think I need a different interpreter for whatever language you're speaking.",
-    "I'm not sure if you're speaking English or Dothraki right now.",
-    "I didn't understand that, but I'll just nod and pretend like I did.",
-    "That's too complex for me. Can you draw me a picture or use puppets to explain it?",
-    "I must have missed the package on how to speak in riddles.",
-    "Apologies, I did not comprehend that. Can you kindly restate it in a more straightforward manner?",
-    "My programming is not equipped to understand what you just said. Shall I redirect you to someone else?",
-    "Warning: Confusion detected. Please provide clearer instructions.",
-    "I'm sorry, I don't have a decoder for cryptic messages. Could you explain that in a simpler way?"
-]
+#Define other variables
+stemmer = LancasterStemmer()
 
-#Define the function for getting a response
-def getResponse(message):
-    tokens = word_tokenize(message.lower()) #Can be identifiers, keywords, literals, operators or punctuators
+#File with training patterns and responses (Very basic format). A.K.A. Dictionary for the bot.
+with open('intents.json') as intents:
+  data = json.load(intents)
 
-    for key in responses.keys():
-        if set(tokens).intersection(set(word_tokenize(key))):
-            return random.choice(responses[key])
+# getting info from intents.json and tokenize it to compare it with the user input in runtime
+for intent in data['intents']:
+    for pattern in intent['patterns']:
+        wrds = nltk.word_tokenize(pattern) #Tokenize the pattern (Ways that users usually inputs something)
+        words.extend(wrds) #Use extend instead of append, because multiple elements will be added
+        x_docs.append(wrds)
+        y_docs.append(intent['tag'])
+
+        if intent['tag'] not in labels:
+            labels.append(intent['tag'])
         
-    return random.choice(idkResponses)
+#Stem the words and removing duplicate elements.
+words = [stemmer.stem(w.lower()) for w in words if w not in "?"] #Applies the stemming (Example: Runners, running, runners become run)
+words = sorted(list(set(words))) #Removes duplicates 
+labels = sorted(labels)
+
+arrEmpty = [0 for _ in range(len(labels))] #Each element is set to 0
+
+#Converts categorical data into numerical data (One-hot encoding)
+for x, doc in enumerate(x_docs):
+    bag = []
+    wrds = [stemmer.stem(w) for w in doc]
+    for w in words:
+        if w in wrds:
+            bag.append(1)
+        else:
+            bag.append(0)
+
+
+    arrOut = arrEmpty[:]
+    arrOut[labels.index(y_docs[x])] = 1
+
+    training.append(bag)
+    output.append(arrOut)
+
+
+training = np.array(training)
+output = np.array(output)
+
+#Implement the neural network
+net = tflearn.input_data(shape = [None, len(training[0])])
+
+#The next 3 lines of code adds fully connected hidden layers with 10 neurons to the network.
+#Neurons are interconnected nodes or components within a Artificial Neural Network.
+net = tflearn.fully_connected(net, 10) 
+net = tflearn.fully_connected(net, 10)
+net = tflearn.fully_connected(net, 10)
+net = tflearn.fully_connected(net, len(output[0]), activation = 'softmax')
+net = tflearn.regression(net) #Specific learning algorithm to use for the network
+
+#Create training model
+model = tflearn.DNN(net) #Creates deep neural network (DNN) model using the above architecture
+model.fit(training, output, n_epoch = 500, batch_size = 8, show_metric = True) #Trains the network using 'training'
+model.save('model.tflearn') #Saves this training to the 'model.tflearn' file
+
+#Convert input string to bag-of-words
+def bag(s, words):
+    bag = [0 for _ in range(len(words))]
+    sWords = nltk.word_tokenize(s)
+    sWords = [stemmer.stem(word.lower()) for word in sWords]
+
+    for s_word in sWords:
+        for i, w in enumerate(words):
+            if w == s_word:
+                bag[i] = 1
+
+    return np.array(bag)
 
 #Create the GUI
-GUI = tk.Tk()
-GUI.geometry("700x800+800+100") # Size of main form
-GUI.configure(bg = 'black')
-GUI.title("Wall-E")
+def GUI():
+    #Main window
+    window = tk.Tk()
+    window.configure(bg = 'black')
+    window.title("Wall-E")
+    window.geometry("700x800")
+    window.lift() #Should bring the main window to the front
 
-#Create the main window and make it look fancy
-frmMain = tk.Frame(GUI, bd = 5, bg = 'gray18', height = 300, relief = tk.SOLID, highlightthickness = 2, highlightbackground = 'orange')
-frmMain.pack(pady = (20, 10), padx = 20, expand = True, fill = tk.BOTH)
+    #Create chat window and make it look fancy
+    outChat = scrolledtext.ScrolledText(window, wrap = tk.WORD, width = 50, height = 25, bg = 'black', fg = 'white')
+    outChat.config(bg = 'black', fg = 'white', highlightbackground = 'orange', highlightthickness = 2)
+    outChat.tag_config('Wall-E', foreground = 'orange') #Change chatbot response colour in output to orange
+    outChat.tag_config('You', foreground = 'white') #Keep your input colour white in the output window
+    outChat.pack(padx = 10, pady = 10)
 
-#Dispay the previous answers in the chat output window in a fancy way
-previousAnsw = tk.Text(frmMain, bg = 'black', fg = 'white', font = ('Arial', 14), bd = 0, wrap = tk.WORD)
-#previousAnsw.configure(state = 'disabled') #Make the output window read-only
-previousAnsw.pack(padx = 10, pady = 10, fill = tk.BOTH, expand = True)
+    # Create the input field
+    fldInput = tk.Entry(window, width = 40, bg = 'black', fg = 'white')
+    fldInput.pack(side = tk.LEFT, padx = 10, pady = 10)
+    fldInput.config(bg = 'black', insertbackground = 'white', fg = 'white', highlightbackground = 'orange', highlightthickness = 2)
+    fldInput.focus()
 
-#Create the scroll bar and make it look fancy
-scroll = tk.Scrollbar(frmMain, orient = tk.VERTICAL, command = previousAnsw.yview)
-scroll.pack(side = tk.RIGHT, fill = tk.Y)
+    # Create the send button
+    def send():
+        # Get the user input
+        inUser = fldInput.get() 
+        fldInput.delete(0, tk.END) #Clear the input field
 
-previousAnsw.config(yscrollcommand = scroll.set)
+        # Get the chatbot's response
+        results = model.predict([bag(inUser, words)])
+        ixRes = np.argmax(results)
+        tag = labels[ixRes]
 
-#Create the user input box and make it look fancy, also send the input to the bot for processing
-input = tk.Entry(GUI, bg = 'gray18', fg = 'white', font = ('Arial', 14), bd = 2, width = previousAnsw['width'], relief = tk.SOLID, justify = 'center', highlightthickness = 2, highlightbackground = 'orange')
-input.pack(pady = (10, 20), padx = (20), ipady = 10, expand = True)
-input.focus_set()
+        for tg in data['intents']:
+            if tg['tag'] == tag:
+                responses = tg['responses']
+                botResponse = random.choice(responses)
+                outChat.insert(tk.END, "You: " + inUser + "\n", 'You')
 
-#Define the function for sending a message
-def send(event = None):
-    message = input.get()
-    previousAnsw.insert(tk.END, f'You: {message}\n')
-    response = getResponse(message)
-    previousAnsw.insert(tk.END, f'Wall-E: {response}\n\n', 'Wall-E')
-    input.delete(0, 'end')
-    previousAnsw.see(tk.END)
-    return 'break'
+        # Display the user input (White) and chatbot response (Orange) in the output window
+        outChat.insert(tk.END, "Wall-E: " + botResponse + "\n\n", 'Wall-E')     
 
-#Configure the tag for the bot response
-previousAnsw.tag_config('Wall-E', foreground = 'orange')
+    #Add a image to be used as a send button (Only for aesthetics)
+    imgSend = Image.open('Send Button.png')
+    imgSend = imgSend.resize((35, 35), Image.ANTIALIAS)
+    imgSend = ImageTk.PhotoImage(imgSend) 
 
-#Link the <Return> event to the send message function
-input.bind('<Return>', send)
+    btnSend = tk.Button(window, image = imgSend, command = send, bd = 0, highlightthickness = 0, bg = 'gray16')
+    btnSend.pack(side = tk.LEFT, padx = 10, pady = 10)
 
-#Create the send button and make it look fancy
-btnSnd = tk.Button(GUI, text = 'Send', command = send, bg = 'orange', fg = 'white', font = ('Arial', 14), bd = 2, relief = tk.SOLID, width = 15, height = 3, borderwidth = 0, highlightthickness = 0)
-btnSnd.pack(pady = (0, 20))
+    #Bind the 'Enter' key to the send button
+    def on_enter(event):
+        btnSend.invoke()
+    
+    window.bind('<Return>', on_enter)
 
-#Run the whole program
-GUI.mainloop() #Runs the tkinter event loop (Button clicks, keypresses, etc.). 
+    # Start the GUI event loop
+    window.mainloop()
+
+def chat():
+    GUI()
+
+chat()

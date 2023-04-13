@@ -1,0 +1,78 @@
+{"intents": [
+    {"tag": "greeting",
+     "patterns": ["Hi there", "How are you", "Is anyone there?","Hey","Hola", "Hello", "Good day"],
+     "responses": ["Hello", "Good to see you again", "Hi there, how can I help?"],
+     "context": [""]
+    },
+    {"tag": "goodbye",
+     "patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time"],
+     "responses": ["See you!", "Have a nice day", "Bye! Come back again soon."],
+     "context": [""]
+    },
+    {"tag": "thanks",
+     "patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
+     "responses": ["My pleasure", "You're Welcome"],
+     "context": [""]
+    },
+    {"tag": "query",
+     "patterns": ["What is big bang?"],
+     "responses": ["The Big Bang theory is the prevailing cosmological model explaining the existence of the observable universe from the earliest known periods through its subsequent large-scale evolution."],
+     "context": [""]
+    },
+    {"tag": "weather",
+    "patterns": ["What's the weather like today?", "Is it going to rain?", "What's the forecast?", "How hot will it be?"],
+    "responses": ["The weather today is mostly sunny with a high of 75 degrees.", "There is a 30% chance of rain today.", "The forecast for the next few days is partly cloudy with a high in the mid 60s."],
+    "context": [""]
+    },
+    {"tag": "food",
+    "patterns": ["What restaurants are nearby?", "Can you recommend a good place to eat?", "What's your favorite cuisine?", "Do you know any vegan restaurants?"],
+    "responses": ["There are several restaurants within walking distance. Some popular options are Italian Kitchen, Thai Garden, and The Burger Joint.", "I recommend trying the sushi at Tokyo Express. It's one of my favorite places to eat.", "I love all kinds of food, but my favorite cuisine is probably Indian. The spices and flavors are so delicious!", "Yes, there is a great vegan restaurant called Green Leaf Cafe downtown."],
+    "context": [""]
+    },
+    {"tag": "music",
+    "patterns": ["What's your favorite type of music?", "Can you recommend any good bands?", "Do you like going to concerts?", "What's the best music festival?"],
+    "responses": ["I enjoy a variety of music, but I really like indie rock and electronic music.", "If you like alternative rock, I would recommend checking out The Strokes or The Black Keys. For electronic music, you might like Daft Punk or Justice.", "I love going to concerts! There's something so special about seeing live music.", "One of the best music festivals is Coachella. It has a great lineup every year and a fun atmosphere."],
+    "context": [""]
+    },
+    {"tag": "movies",
+    "patterns": ["What's a good movie to watch?", "Have you seen any good movies lately?", "What's your favorite movie?", "Do you like horror movies?"],
+    "responses": ["If you're in the mood for a comedy, I would recommend watching Bridesmaids. It's hilarious! I recently saw the movie Parasite and thought it was really well done.", "One of my favorite movies is The Shawshank Redemption. It's a classic!", "I'm not a big fan of horror movies, but I know a lot of people enjoy them. Have you seen the movie Hereditary? I've heard it's really scary."],
+    "context": [""]
+    },
+    {"tag": "booking",
+    "patterns": ["Can I make a reservation?", "What's your availability?", "How do I book a room?", "What are your rates?"],
+    "responses": ["Yes, you can make a reservation by calling our front desk or booking online. Our availability varies depending on the dates you're interested in. To book a room, you'll need to provide some basic information like your name and contact details. Our rates start at $100 per night.", "We have several rooms available this week. To book a room, you can call us or book online. Our rates are competitive and vary depending on the type of room and length of stay."],
+    "context": [""]
+    },
+    {"tag": "travel",
+    "patterns": ["Do you have any travel tips?", "What's the best way to pack for a trip?", "How do I find cheap flights?", "What's the best way to plan a trip?"],
+    "responses": ["When traveling, it's always a good idea to pack light and bring versatile clothing. You can save space by rolling your clothes instead of folding them. To find cheap flights, try using a travel search engine like Kayak or Skyscanner. The best way to plan a trip is to do some research ahead of time and create a rough itinerary. Make sure to leave some room for flexibility and spontaneity.", "One of the best travel tips is to pack a travel-sized laundry detergent so you can do laundry on the go. When packing, think about what you'll actually need and leave behind anything unnecessary. You can find cheap flights by being flexible with your travel dates and using rewards programs or credit card points. To plan a trip, start by deciding where you want to go and what you want to do. Then, research transportation options, accommodations, and activities."],
+    "context": [""]
+    },
+    {"tag": "health",
+    "patterns": ["How can I improve my health?", "What's the best way to stay active?", "How can I manage stress?", "What are some healthy eating habits?"],
+    "responses": ["To improve your health, try to get regular exercise, eat a balanced diet, and get enough sleep. The best way to stay active is to find a type of exercise you enjoy, like running, yoga, or swimming. To manage stress, try practicing mindfulness or meditation, and make sure to take breaks when you need them. Some healthy eating habits include eating a variety of fruits and vegetables, limiting processed foods, and drinking plenty of water.", "Improving your health can be as simple as taking a daily walk or swapping out sugary drinks for water. Staying active doesn't have to mean going to the gym - you can also try activities like hiking or dancing. To manage stress, try to identify your triggers and find healthy ways to cope, like taking a hot bath or talking to a friend. Eating a balanced diet that includes whole foods and lean proteins is key to staying healthy."],
+    "context": [""]
+    },
+    {"tag": "sports",
+    "patterns": ["What's your favorite sport?", "Who's your favorite athlete?", "Do you play any sports?", "What's the score of the game?"],
+    "responses": ["My favorite sport is basketball. I love watching Steph Curry play. I don't play any sports myself, but I enjoy staying active by going for walks and doing yoga. I'm sorry, I don't have that information right now. You can check the score online or on TV."],
+    "context": [""]
+    },
+    {"tag": "technology",
+    "patterns": ["What's the latest technology news?", "What's your favorite gadget?", "Do you like Apple or Android?", "How do I fix my computer?"],
+    "responses": ["Some recent technology news includes the release of the new iPhone and advancements in artificial intelligence. My favorite gadget is probably my smartwatch. I think both Apple and Android have their strengths and weaknesses. To fix your computer, you might try restarting it or running a virus scan.", "I stay up to date on technology news by reading online blogs and following tech influencers on social media. My favorite gadget is my noise-cancelling headphones. I prefer Apple products, but I know a lot of people love Android. If you're having trouble with your computer, you might try searching for solutions online or taking it to a professional."],
+    "context": [""]
+    },
+    {"tag": "books",
+    "patterns": ["What's a good book to read?", "Have you read any good books lately?", "Who's your favorite author?", "Do you prefer ebooks or physical books?"],
+    "responses": ["If you're in the mood for a thriller, I would recommend reading Gone Girl. It's a real page-turner! I recently read the book Educated and thought it was really inspiring. My favorite author is probably J.K. Rowling. I love the Harry Potter series. I like both ebooks and physical books, but there's something special about holding a physical book in your hands.", "I'm always looking for book recommendations. Have you read The Nightingale? It's a really beautiful story. I also love anything by Toni Morrison. I think she's such a talented writer. I prefer ebooks because they're more convenient, but I also like the feeling of a physical book."],
+    "context": [""]
+    },
+    {"tag": "politics",
+    "patterns": ["What's happening in the world of politics?", "What's your opinion on the current political climate?", "Do you follow politics?", "Who did you vote for in the last election?"],
+    "responses": ["There's a lot happening in the world of politics right now, from debates over healthcare to discussions about immigration. I think the current political climate is very polarized and divisive. I do follow politics, but it can be exhausting at times. I prefer to focus on the issues rather than individual politicians. I'm sorry, I'm not able to vote since I'm an AI language model.", "I try to stay informed about politics by reading a variety of news sources and staying up to date on social media. I think it's important to stay engaged and informed, even if it can be overwhelming. I don't usually share my political opinions since I try to remain neutral as an AI language model."],
+    "context": [""]
+    }
+]
+}

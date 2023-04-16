@@ -1,0 +1,75 @@
+import random
+import tkinter as tk
+import re
+import json
+from fuzzywuzzy import process, fuzz
+
+#Define a dictionary of possible user inputs and corresponding bot responses
+with open("Responses.json", 'r') as r:
+    Responses = json.load(r)
+
+with open('idkResponses.txt') as idk:
+    idkResponses = idk.readlines()
+
+#Count frequency of words in user input, and train the bot
+def train(input_text):
+    words = re.findall(r'\w+', input_text.lower())
+    return {word: words.count(word) for word in words}
+
+#Find best response using fuzzy string matching
+def CreateResponse(input):
+    # convert user input to lowercase for easy comparison
+    input = input.lower()
+    # iterate over the patterns for each input to find a match
+    for input_key in Responses:
+        for pattern in Responses[input_key]["patterns"]:
+            if process.extractOne(input, [pattern], scorer=fuzz.ratio)[1] >= 75:
+                return random.choice(Responses[input_key]["responses"])
+    # return a default response if no match is found
+    return random.choice(idkResponses)
+
+#Create the GUI and link it to the chatbot
+GUI = tk.Tk()
+GUI.title("Wall-E")
+GUI.geometry("600x600")
+GUI.configure(bg = "black")
+
+#Output window with scroll bar
+chat_frame = tk.Frame(GUI)
+chat_frame.pack(pady = 10)
+chat_frame.configure(bg = "#444444")
+
+chat_window = tk.Text(chat_frame, height = 20, width = 60)
+chat_window.pack(side = tk.LEFT)
+chat_window.configure(bg = "#444444", fg = "white")
+
+chat_scrollbar = tk.Scrollbar(chat_frame, command = chat_window.yview)
+chat_scrollbar.pack(side = tk.RIGHT, fill = tk.Y)
+
+chat_window.config(yscrollcommand=chat_scrollbar.set)
+
+#Input box
+inBox = tk.Entry(GUI, width = 60)
+inBox.pack(pady = 10)
+inBox.configure(bg = "white", fg = "black")
+inBox.focus_set()
+
+#Send button
+def send_message(event = None):
+    input = inBox.get()
+    if input.lower() == "quit":
+        GUI.quit()
+    input_vector = train(input)
+    bot_response = CreateResponse(input)
+    chat_window.insert(tk.END, "You: " + input + "\n", "user")
+    chat_window.insert(tk.END, "Wall-E: " + bot_response + "\n\n", "bot")
+    chat_window.tag_config("user", foreground = "white")
+    chat_window.tag_config("bot", foreground = "orange")
+    inBox.delete(0, tk.END)
+
+send_button = tk.Button(GUI, text = "Send", command = send_message, bg = "orange", fg = "black", font = ("Arial", 14, "bold"))
+send_button.pack(pady = 10)
+GUI.bind("<Return>", send_message)
+
+#Run the GUI
+GUI.mainloop()

@@ -5,32 +5,32 @@ import re
 import json
 from fuzzywuzzy import process, fuzz
 
-#Define a dictionary of possible user inputs and corresponding bot responses
-with open("Responses.json", 'r') as r:
-    Responses = json.load(r)
-
 #Define a dictionary of possible bot responses if he does not find a good match
 with open('idkResponses.txt') as idk:
     idkResponses = idk.readlines()
 
+#Define a dictionary of possible user inputs and corresponding bot responses
+with open("Responses.json", 'r') as r:
+    Responses = json.load(r)
+
 #Count frequency of words in user input, and train the bot
-def train(input_text):
-    words = re.findall(r'\w+', input_text.lower())
+def train(txtInput):
+    words = re.findall(r'\w+', txtInput.lower())
+
     return {word: words.count(word) for word in words}
 
 #Find best response using the fuzzy library string matching
 def CreateResponse(input):
-    #Convert input to lowercase
-    input = input.lower()
+    input = input.lower() #Convert input to lowercase
 
     #Find a match by iterating through the input and the patterns and get a ratio to decide which output is best
-    for input_key in Responses:
-        for pattern in Responses[input_key]["patterns"]:
+    for key in Responses:
+        for pattern in Responses[key]["patterns"]:
             if process.extractOne(input, [pattern], scorer = fuzz.ratio)[1] >= 75:
-                return random.choice(Responses[input_key]["responses"])
+                return random.choice(Responses[key]["responses"])
             
-    #Return a idk response
-    return random.choice(idkResponses)
+    #Return a random idk response
+    return random.choice(idkResponses) #Choose a random idkRensponse
 
 #Create the GUI and link it to the chatbot
 GUI = tk.Tk()
@@ -41,39 +41,45 @@ GUI.configure(bg = "black")
 #Output window with scroll bar
 outBorder = tk.Frame(GUI)
 outBorder.pack(pady = 10)
-outBorder.configure(bg = "#444444")
+outBorder.configure(bg = "gray18")
 
+#Create the window where the output is displayed
 outWindow = tk.Text(outBorder, height = 20, width = 60)
 outWindow.pack(side = tk.LEFT)
-outWindow.configure(bg = "#444444", fg = "white")
+outWindow.configure(bg = "gray18", fg = "white")
 
 scrlOut = tk.Scrollbar(outBorder, command = outWindow.yview)
 scrlOut.pack(side = tk.RIGHT, fill = tk.Y)
 
 outWindow.config(yscrollcommand = scrlOut.set)
 
-#Input box
-inBox = tk.Entry(GUI, width = 60)
-inBox.pack(pady = 10)
-inBox.configure(bg = "white", fg = "black")
-inBox.focus_set()
-
 #Send button
-def send_message(event = None):
+def msgSend(event = None):
     input = inBox.get()
     if input.lower() == "quit":
         GUI.quit()
+
     vInput = train(input)
     walleResp = CreateResponse(input)
+
     outWindow.insert(tk.END, "You: " + input + "\n", "user")
     outWindow.insert(tk.END, "Wall-E: " + walleResp + "\n\n", "bot")
     outWindow.tag_config("user", foreground = "white")
-    outWindow.tag_config("bot", foreground = "orange")
-    inBox.delete(0, tk.END)
+    outWindow.tag_config("bot", foreground = "orange")  
 
-btnSend = tk.Button(GUI, text = "Send", command = send_message, bg = "orange", fg = "black", font = ("Arial", 14, "bold"))
+    inBox.delete(0, tk.END) #Clear the input box
+
+#Input box
+inBox = tk.Entry(GUI, width = 60)
+inBox.pack(pady = 10)
+inBox.configure(fg = "black", bg = "white")
+inBox.focus_set()
+
+#Create the send button
+btnSend = tk.Button(GUI, font = ("Arial", 14, "bold"), text = "Send", fg = "black", bg = "orange", command = msgSend)
 btnSend.pack(pady = 10)
-GUI.bind("<Return>", send_message)
+
+GUI.bind("<Return>", msgSend) #When i press enter, the message must automatically be sent
 
 #Run the GUI
 GUI.mainloop()

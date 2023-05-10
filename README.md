@@ -1,4 +1,4 @@
-To run this desktop bet and chatbot you will need the following REQUIREMENTS:
+To run this desktop pet and chatbot you will need the following REQUIREMENTS:
 
 Windows 10
 Python 3.11.2
